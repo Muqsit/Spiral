@@ -5,12 +5,15 @@ namespace Muqsit;
 use pocketmine\plugin\PluginBase;
 use pocketmine\level\particle\FlameParticle;
 use pocketmine\math\Vector3;
-use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\Listener;
+use pocketmine\utils\Config;
 
 class Spiral extends PluginBase implements Listener {
     
     public function onEnable() {
+        @mkdir($this->getDataFolder());
+        $this->saveDefaultConfig();
+        $this->reloadConfig();
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->getLogger()->info("Spiral has been enabled.");
     }
@@ -24,12 +27,12 @@ class Spiral extends PluginBase implements Listener {
     255,0,255,1 - Magenta
     */
     
-    public function onMove(PlayerMoveEvent $event) {
-        $sender = $event->getPlayer();
-        $level = $sender->getLevel();
-        $x = $sender->getX();
-        $y = $sender->getY();
-        $z = $sender->getZ();
+    public function onGenerate() {
+        $cfg = $this->getConfig();
+        $level = $cfg->get("world");
+        $x = $cfg->get("x");
+        $y = $cfg->get("y");
+        $z = $cfg->get("z");
         $center = new Vector3($x, $y, $z);
         $particle = new FlameParticle($center);
         for($yaw = 0, $y = $center->y; $y < $center->y + 4; $yaw += (M_PI * 2) / 20, $y += 1 / 20) {
@@ -41,7 +44,7 @@ class Spiral extends PluginBase implements Listener {
     }
     
     public function onDisable() {
-        $this->getLogger()->info("SpiralParticle has been disabled.");
+        $this->getLogger()->info("Spiral has been disabled.");
     }
     
 }
